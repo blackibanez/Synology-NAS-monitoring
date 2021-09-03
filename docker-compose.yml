@@ -4,7 +4,7 @@ services:
     image: blackibanez/telegraf-influxdb-grafana:latest
     container_name: grafana
     environment:
-      TZ: Europe/London
+      TZ: Europe/Paris
     restart: unless-stopped
     volumes:
       - /volume1/docker/grafana:/var/lib/grafana
