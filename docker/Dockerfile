@@ -8,7 +8,7 @@ ENV LANG C.UTF-8
 # Default versions
 ENV TELEGRAF_VERSION 1.16.3-1
 ENV INFLUXDB_VERSION 1.8.3
-ENV GRAFANA_VERSION  7.3.5
+ENV GRAFANA_VERSION  8.1.2
 ENV CHRONOGRAF_VERSION 1.8.9.1
 
 ENV GF_DATABASE_TYPE=sqlite3
@@ -25,6 +25,7 @@ RUN apt-get -y update && \
   ca-certificates \
   curl \
   git \
+  vim \
   htop \
   libfontconfig \
   mc \
@@ -36,6 +37,20 @@ RUN apt-get -y update && \
   gnupg1 \
   snmp \
   syslog-ng \
+  libnss3-tools \
+  libatk-bridge2.0-0 \
+  libcups2-dev \
+  libdrm2 \
+  libxkbcommon-x11-0 \
+  libxcomposite-dev \
+  libxdamage-dev \
+  libxrandr2 \
+  libgbm-dev \
+  libcairo2 \
+  libasound2-dev \
+  libxshmfence-dev \
+  libpango-1.0-0 \
+  libatk1.0-0 \
   snmp-mibs-downloader \
   wget && \
  curl -sL https://deb.nodesource.com/setup_15.x | bash - && \
