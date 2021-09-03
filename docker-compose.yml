@@ -1,7 +1,7 @@
 version: '3'
 services:
   grafana:
-    image: alhazmy13/telegraf-influxdb-grafana:latest
+    image: blackibanez/telegraf-influxdb-grafana:latest
     container_name: grafana
     environment:
       TZ: Europe/London
