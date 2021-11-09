@@ -103,7 +103,7 @@ ADD grafana/provisioning /etc/grafana/provisioning
 COPY grafana/grafana.ini /etc/grafana/grafana.ini
 
 # Synology SNMP
-COPY synology/* /usr/share/snmp/mibs
+COPY synology/* /usr/share/snmp/mibs/
 RUN chown root:root /usr/share/snmp/mibs
 RUN chmod 755 /usr/share/snmp/mibs
 
