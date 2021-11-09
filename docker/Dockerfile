@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-LABEL maintainer="Abdullah ALhazmy <me@alhazmy13.net>"
+LABEL maintainer="blackibanez"
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LANG C.UTF-8
