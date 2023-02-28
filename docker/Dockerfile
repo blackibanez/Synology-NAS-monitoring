@@ -7,7 +7,7 @@ ENV LANG C.UTF-8
 
 # Default versions
 ENV TELEGRAF_VERSION 1.52.2
-ENV INFLUXDB_VERSION 2.4.0
+ENV INFLUXDB_VERSION 2.6.1
 ENV GRAFANA_VERSION  9.3.6
 ENV CHRONOGRAF_VERSION 1.10
 
@@ -71,8 +71,8 @@ RUN mkdir -p /var/log/supervisor && \
 COPY bash/profile .profile
 
 # Install InfluxDB
-RUN wget https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_amd64.deb && \
- dpkg -i influxdb_${INFLUXDB_VERSION}_amd64.deb && rm influxdb_${INFLUXDB_VERSION}_amd64.deb
+RUN wget https://dl.influxdata.com/influxdb/releases/influxdb2_${INFLUXDB_VERSION}_amd64.deb && \
+ dpkg -i influxdb_${INFLUXDB_VERSION}_amd64.deb && rm influxdb2_${INFLUXDB_VERSION}_amd64.deb
 
 # Configure InfluxDB
 COPY influxdb/influxdb.conf /etc/influxdb/influxdb.conf
