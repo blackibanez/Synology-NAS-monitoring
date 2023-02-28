@@ -71,8 +71,14 @@ RUN mkdir -p /var/log/supervisor && \
 COPY bash/profile .profile
 
 # Install InfluxDB
-RUN wget https://dl.influxdata.com/influxdb/releases/influxdb2_${INFLUXDB_VERSION}_amd64.deb && \
- dpkg -i influxdb_${INFLUXDB_VERSION}_amd64.deb && rm influxdb2_${INFLUXDB_VERSION}_amd64.deb
+#RUN wget https://dl.influxdata.com/influxdb/releases/influxdb2_${INFLUXDB_VERSION}_amd64.deb && \
+## dpkg -i influxdb_${INFLUXDB_VERSION}_amd64.deb && rm influxdb2_${INFLUXDB_VERSION}_amd64.deb
+
+# Install InfluxDB2
+RUN wget -q https://repos.influxdata.com/influxdata-archive_compat.key 
+RUN echo '393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c influxdata-archive_compat.key' | sha256sum -c && cat influxdata-archive_compat.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg > /dev/null
+RUN echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https://repos.influxdata.com/debian stable main' | sudo tee /etc/apt/sources.list.d/influxdata.list
+RUN apt-get update && sudo apt-get install influxdb2
 
 # Configure InfluxDB
 COPY influxdb/influxdb.conf /etc/influxdb/influxdb.conf
@@ -82,8 +88,15 @@ COPY influxdb/init.sh /etc/init.d/influxdb
 COPY syslog/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 
 # Install Telegraf
-RUN wget https://dl.influxdata.com/telegraf/releases/telegraf_${TELEGRAF_VERSION}_amd64.deb && \
- dpkg -i telegraf_${TELEGRAF_VERSION}_amd64.deb && rm telegraf_${TELEGRAF_VERSION}_amd64.deb
+#RUN wget https://dl.influxdata.com/telegraf/releases/telegraf_${TELEGRAF_VERSION}_amd64.deb && \
+# dpkg -i telegraf_${TELEGRAF_VERSION}_amd64.deb && rm telegraf_${TELEGRAF_VERSION}_amd64.deb
+ 
+ # influxdata-archive_compat.key GPG fingerprint:
+#     9D53 9D90 D332 8DC7 D6C8 D3B9 D8FF 8E1F 7DF8 B07E
+RUN wget -q https://repos.influxdata.com/influxdata-archive_compat.key
+RUN echo '393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c influxdata-archive_compat.key' | sha256sum -c && cat influxdata-archive_compat.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg > /dev/null
+RUN echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https://repos.influxdata.com/debian stable main' | sudo tee /etc/apt/sources.list.d/influxdata.list
+RUN sudo apt-get update && sudo apt-get install telegraf
 
 # Configure Telegraf
 RUN mv -f /etc/telegraf/telegraf.conf /etc/telegraf/telegraf.conf.default 
