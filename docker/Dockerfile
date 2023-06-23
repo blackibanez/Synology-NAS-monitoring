@@ -6,10 +6,10 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV LANG C.UTF-8
 
 # Default versions
-ENV TELEGRAF_VERSION 1.52.2
-ENV INFLUXDB_VERSION 2.6.1
-ENV GRAFANA_VERSION  9.3.6
-ENV CHRONOGRAF_VERSION 1.10
+#ENV TELEGRAF_VERSION 1.52.2
+#ENV INFLUXDB_VERSION 2.6.1
+#ENV GRAFANA_VERSION  9.3.6
+#ENV CHRONOGRAF_VERSION 1.10
 
 ENV GF_DATABASE_TYPE=sqlite3
 
@@ -21,6 +21,7 @@ RUN rm /var/lib/apt/lists/* -vf
 RUN apt-get -y update && \
  apt-get -y dist-upgrade && \
  apt-get -y install \
+  vim \
   apt-utils \
   ca-certificates \
   curl \
@@ -71,37 +72,25 @@ RUN mkdir -p /var/log/supervisor && \
 COPY bash/profile .profile
 
 # Install InfluxDB
-#RUN wget https://dl.influxdata.com/influxdb/releases/influxdb2_${INFLUXDB_VERSION}_amd64.deb && \
-## dpkg -i influxdb_${INFLUXDB_VERSION}_amd64.deb && rm influxdb2_${INFLUXDB_VERSION}_amd64.deb
-
-# Install InfluxDB2
-RUN wget -q https://repos.influxdata.com/influxdata-archive_compat.key 
-RUN echo '393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c influxdata-archive_compat.key' | sha256sum -c && cat influxdata-archive_compat.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg > /dev/null
-RUN echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https://repos.influxdata.com/debian stable main' | sudo tee /etc/apt/sources.list.d/influxdata.list
-RUN apt-get update && sudo apt-get install influxdb2
+RUN wget https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_amd64.deb && \
+ dpkg -i influxdb_${INFLUXDB_VERSION}_amd64.deb && rm influxdb_${INFLUXDB_VERSION}_amd64.deb
 
 # Configure InfluxDB
 COPY influxdb/influxdb.conf /etc/influxdb/influxdb.conf
-COPY influxdb/init.sh /etc/init.d/influxdb
+RUN chmod 0777 /var/lib/influxdb
 
 #install syslog-ng 
 COPY syslog/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 
 # Install Telegraf
-#RUN wget https://dl.influxdata.com/telegraf/releases/telegraf_${TELEGRAF_VERSION}_amd64.deb && \
-# dpkg -i telegraf_${TELEGRAF_VERSION}_amd64.deb && rm telegraf_${TELEGRAF_VERSION}_amd64.deb
- 
- # influxdata-archive_compat.key GPG fingerprint:
-#     9D53 9D90 D332 8DC7 D6C8 D3B9 D8FF 8E1F 7DF8 B07E
-RUN wget -q https://repos.influxdata.com/influxdata-archive_compat.key
-RUN echo '393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c influxdata-archive_compat.key' | sha256sum -c && cat influxdata-archive_compat.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg > /dev/null
-RUN echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https://repos.influxdata.com/debian stable main' | sudo tee /etc/apt/sources.list.d/influxdata.list
-RUN sudo apt-get update && sudo apt-get install telegraf
+RUN wget https://dl.influxdata.com/telegraf/releases/telegraf_${TELEGRAF_VERSION}_amd64.deb && \
+ dpkg -i telegraf_${TELEGRAF_VERSION}_amd64.deb && rm telegraf_${TELEGRAF_VERSION}_amd64.deb
 
 # Configure Telegraf
 RUN mv -f /etc/telegraf/telegraf.conf /etc/telegraf/telegraf.conf.default 
 COPY telegraf/telegraf.conf /etc/telegraf/telegraf.conf
 COPY telegraf/init.sh /etc/init.d/telegraf
+RUN chmod 0777 /etc/init.d/telegraf
 
 # Install Chronograf
 RUN wget https://dl.influxdata.com/chronograf/releases/chronograf_${CHRONOGRAF_VERSION}_amd64.deb && \
@@ -114,9 +103,10 @@ RUN wget https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_amd64.deb
 # Configure Grafana with provisioning
 ADD grafana/provisioning /etc/grafana/provisioning
 COPY grafana/grafana.ini /etc/grafana/grafana.ini
+RUN chmod 0777 /var/lib/grafana
 
 # Synology SNMP
-COPY synology/* /usr/share/snmp/mibs/
+COPY synology/* /usr/share/snmp/mibs
 RUN chown root:root /usr/share/snmp/mibs
 RUN chmod 755 /usr/share/snmp/mibs
 
@@ -127,7 +117,7 @@ RUN chmod 755 /usr/share/snmp/mibs
 
 #
 
-EXPOSE 22/tcp 3003/tcp 8086/tcp 8888/tcp 8125/udp 514/udp
+EXPOSE 22/tcp 3003/tcp 8086/tcp 8083/tcp 8888/tcp 8125/udp 514/udp
 #VOLUME /var/lib/influxdb /var/lib/grafana /var/lib/backups
 
 # Cleanup
