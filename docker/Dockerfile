@@ -52,6 +52,7 @@ RUN apt-get -y update && \
   libxshmfence-dev \
   libpango-1.0-0 \
   libatk1.0-0 \
+  python3 \
   snmp-mibs-downloader \
   wget && \
  curl -sL https://deb.nodesource.com/setup_15.x | bash - && \
